@@ -11,11 +11,7 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get -y install \
  libapr1-dev libaprutil1-dev php5 apache2 mysql-server git curl \
  ruby2.1 ruby2.1-dev build-essential
 
-
 ADD /pf.conf /etc/apache2/sites-available/pf.conf
-
-RUN a2ensite pf
-RUN a2dissite 000-default
 
 RUN git clone https://github.com/pentestgeek/phishing-frenzy.git /var/www/phishing-frenzy
 RUN touch /etc/apache2/httpd.conf
@@ -24,9 +20,11 @@ RUN chown www-data:www-data /etc/apache2/httpd.conf
 RUN gem install --no-rdoc --no-ri rails
 RUN gem install --no-rdoc --no-ri passenger -v 5.0.6
 
-RUN passenger-install-apache2-module
+RUN yes | passenger-install-apache2-module
 
 ADD /apache2.conf /etc/apache2/apache2.conf
+RUN a2ensite pf
+RUN a2dissite 000-default
 
 RUN echo "www-data ALL=(ALL) NOPASSWD: /etc/init.d/apache2 reload" >> /etc/sudoers
 
