@@ -34,11 +34,12 @@ RUN echo "www-data ALL=(ALL) NOPASSWD: /etc/init.d/apache2 reload" >> /etc/sudoe
 
 RUN /etc/init.d/mysql start && \
  mysqladmin -u root password "Funt1me!" && \
- mysql -uroot -pFunt1me! -e "create database pf_dev;" && \
- mysql -uroot -pFunt1me! -e "grant all privileges on pf_dev.* to 'pf_dev'@'localhost' identified by 'password';"
+ mysql -uroot -pFunt1me! -e "create database pf_prod;" && \
+ mysql -uroot -pFunt1me! -e "grant all privileges on pf_prod.* to 'pf_prod'@'localhost' identified by 'password';"
 
-RUN cd /var/www/phishing-frenzy/ && bundle install && \
+RUN RAILS_ENV=production && cd /var/www/phishing-frenzy/ && bundle install && \
  /etc/init.d/mysql start && \
+ bundle exec rake assets:precompile && \
  bundle exec rake db:migrate && bundle exec rake db:seed
 
 RUN cd /var/www/phishing-frenzy/ && \
