@@ -2,11 +2,15 @@ FROM ubuntu:latest
 
 MAINTAINER b00stfr3ak
 
+EXPOSE 80
+
+ENV DEBIAN_FRONTEND noninteractive
+
 RUN ln -s -f /bin/true /usr/bin/chfn
+
 RUN apt-get update && apt-get -y install software-properties-common
 RUN apt-add-repository ppa:brightbox/ruby-ng
-RUN DEBIAN_FRONTEND=noninteractive apt-get update && apt-get -y upgrade
-RUN DEBIAN_FRONTEND=noninteractive apt-get -y install \
+RUN apt-get update && apt-get -y upgrade && apt-get -y install \
  libcurl4-openssl-dev libssl-dev zlib1g-dev apache2-threaded-dev \
  libapr1-dev libaprutil1-dev php5 apache2 mysql-server git curl \
  ruby2.1 ruby2.1-dev build-essential
@@ -14,7 +18,7 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get -y install \
 RUN gem install --no-rdoc --no-ri rails
 RUN gem install --no-rdoc --no-ri passenger -v 5.0.6
 
-ADD /pf.conf /etc/apache2/sites-available/pf.conf
+COPY /pf.conf /etc/apache2/sites-available/pf.conf
 
 RUN git clone https://github.com/pentestgeek/phishing-frenzy.git /var/www/phishing-frenzy
 RUN touch /etc/apache2/httpd.conf
@@ -22,7 +26,7 @@ RUN chown www-data:www-data /etc/apache2/httpd.conf
 
 RUN yes | passenger-install-apache2-module
 
-ADD /apache2.conf /etc/apache2/apache2.conf
+COPY /apache2.conf /etc/apache2/apache2.conf
 RUN a2ensite pf
 RUN a2dissite 000-default
 
@@ -33,13 +37,13 @@ RUN /etc/init.d/mysql start && \
  mysql -uroot -pFunt1me! -e "create database pf_dev;" && \
  mysql -uroot -pFunt1me! -e "grant all privileges on pf_dev.* to 'pf_dev'@'localhost' identified by 'password';"
 
-RUN cd /var/www/phishing-frenzy/ && bundle install && \
- /etc/init.d/mysql start && \
+RUN cd /var/www/phishing-frenzy/ && bundle install
+RUN /etc/init.d/mysql start && \
  bundle exec rake db:migrate && bundle exec rake db:seed
 
 RUN cd /var/www/phishing-frenzy/ && \
- curl http://download.redis.io/releases/redis-stable.tar.gz -o redis-stable.tar.gz && \
- tar xzf redis-stable.tar.gz && rm redis-stable.tar.gz && cd redis-* && \
+ curl http://download.redis.io/releases/redis-stable.tar.gz  \
+ | tar -xz && cd redis-stable && \
  make && make install && cd utils/ && ./install_server.sh
 
 RUN cd /var/www/phishing-frenzy/ && mkdir -p tmp/pids
@@ -56,7 +60,7 @@ RUN chown -R www-data:www-data /var/www/phishing-frenzy/public/uploads/
 
 RUN chmod -R 755 /var/www/phishing-frenzy/public/uploads/
 
-ADD /startup.sh /startup.sh
+COPY /startup.sh /startup.sh
 
 RUN chmod +x /startup.sh
 
