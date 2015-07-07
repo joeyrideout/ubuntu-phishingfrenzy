@@ -2,6 +2,7 @@ FROM ubuntu:latest
 
 MAINTAINER b00stfr3ak
 
+RUN ln -s -f /bin/true /usr/bin/chfn
 RUN apt-get update
 RUN apt-get -y install software-properties-common
 RUN apt-add-repository ppa:brightbox/ruby-ng
