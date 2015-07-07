@@ -3,11 +3,9 @@ FROM ubuntu:latest
 MAINTAINER b00stfr3ak
 
 RUN ln -s -f /bin/true /usr/bin/chfn
-RUN apt-get update
-RUN apt-get -y install software-properties-common
+RUN apt-get update && apt-get -y install software-properties-common
 RUN apt-add-repository ppa:brightbox/ruby-ng
-RUN apt-get update
-run apt-get -y upgrade
+RUN DEBIAN_FRONTEND=noninteractive apt-get update && apt-get -y upgrade
 RUN DEBIAN_FRONTEND=noninteractive apt-get -y install \
  libcurl4-openssl-dev libssl-dev zlib1g-dev apache2-threaded-dev \
  libapr1-dev libaprutil1-dev php5 apache2 mysql-server git curl \
