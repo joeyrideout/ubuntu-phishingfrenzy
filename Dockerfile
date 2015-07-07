@@ -13,7 +13,10 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get -y install \
  ruby2.1 ruby2.1-dev build-essential
 
 
-ADD /pf.conf /etc/apache2/pf.conf
+ADD /pf.conf /etc/apache2/sites-available/pf.conf
+
+RUN a2ensite pf
+RUN a2dissite 000-default
 
 RUN git clone https://github.com/pentestgeek/phishing-frenzy.git /var/www/phishing-frenzy
 RUN touch /etc/apache2/httpd.conf
