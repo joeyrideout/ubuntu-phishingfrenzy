@@ -12,7 +12,7 @@ RUN apt-get update && apt-get -y install software-properties-common
 RUN apt-add-repository ppa:brightbox/ruby-ng
 RUN apt-get update && apt-get -y upgrade && apt-get -y install \
  libcurl4-openssl-dev libssl-dev zlib1g-dev apache2-threaded-dev \
- libapr1-dev libaprutil1-dev php5 apache2 mysql-server git curl \
+ libapr1-dev libaprutil1-dev php5 apache2 git curl \
  ruby2.1 ruby2.1-dev build-essential
 
 RUN gem install --no-rdoc --no-ri rails
@@ -32,21 +32,8 @@ RUN a2dissite 000-default
 
 RUN echo "www-data ALL=(ALL) NOPASSWD: /etc/init.d/apache2 reload" >> /etc/sudoers
 
-RUN /etc/init.d/mysql start && \
- mysqladmin -u root password "Funt1me!" && \
- mysql -uroot -pFunt1me! -e "create database pf_dev;" && \
- mysql -uroot -pFunt1me! -e "grant all privileges on pf_dev.* to 'pf_dev'@'localhost' identified by 'password';"
-
 RUN cd /var/www/phishing-frenzy/ && bundle install
-RUN /etc/init.d/mysql start && \
- bundle exec rake db:migrate && bundle exec rake db:seed
-
-RUN cd /var/www/phishing-frenzy/ && \
- curl http://download.redis.io/releases/redis-stable.tar.gz  \
- | tar -xz && cd redis-stable && \
- make && make install && cd utils/ && ./install_server.sh
-
-RUN cd /var/www/phishing-frenzy/ && mkdir -p tmp/pids
+RUN bundle exec rake db:migrate && bundle exec rake db:seed
 
 RUN sudo chown -R www-data:www-data /var/www/phishing-frenzy/
 
