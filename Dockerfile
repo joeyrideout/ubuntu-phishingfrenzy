@@ -2,8 +2,6 @@ FROM ubuntu:latest
 
 MAINTAINER b00stfr3ak
 
-EXPOSE 80
-
 ENV DEBIAN_FRONTEND noninteractive
 
 RUN ln -s -f /bin/true /usr/bin/chfn
@@ -33,11 +31,11 @@ RUN a2dissite 000-default
 RUN echo "www-data ALL=(ALL) NOPASSWD: /etc/init.d/apache2 reload" >> /etc/sudoers
 
 RUN cd /var/www/phishing-frenzy/ && bundle install
-RUN bundle exec rake db:migrate && bundle exec rake db:seed
+RUN cd /var/www/phishing-frenzy/ && bundle exec rake db:migrate && bundle exec rake db:seed
 
 RUN sudo chown -R www-data:www-data /var/www/phishing-frenzy/
 
-RUN cd /var/www/phishing-frenzy/ && /etc/init.d/mysql start && bundle exec rake templates:load
+RUN cd /var/www/phishing-frenzy/ && bundle exec rake templates:load
 
 RUN chown -R www-data:www-data /etc/apache2/sites-available/
 
@@ -52,3 +50,5 @@ COPY /startup.sh /startup.sh
 RUN chmod +x /startup.sh
 
 CMD /startup.sh
+
+EXPOSE 80
