@@ -31,11 +31,8 @@ RUN a2dissite 000-default
 RUN echo "www-data ALL=(ALL) NOPASSWD: /etc/init.d/apache2 reload" >> /etc/sudoers
 
 RUN cd /var/www/phishing-frenzy/ && bundle install
-RUN cd /var/www/phishing-frenzy/ && bundle exec rake db:migrate && bundle exec rake db:seed
 
 RUN sudo chown -R www-data:www-data /var/www/phishing-frenzy/
-
-RUN cd /var/www/phishing-frenzy/ && bundle exec rake templates:load
 
 RUN chown -R www-data:www-data /etc/apache2/sites-available/
 
@@ -48,6 +45,8 @@ RUN chmod -R 755 /var/www/phishing-frenzy/public/uploads/
 COPY /startup.sh /startup.sh
 
 RUN chmod +x /startup.sh
+
+ADD /database.yml /var/www/phishing-frenzy/config/database.yml
 
 CMD /startup.sh
 
