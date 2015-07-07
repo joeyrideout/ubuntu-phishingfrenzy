@@ -11,14 +11,14 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get -y install \
  libapr1-dev libaprutil1-dev php5 apache2 mysql-server git curl \
  ruby2.1 ruby2.1-dev build-essential
 
+RUN gem install --no-rdoc --no-ri rails
+RUN gem install --no-rdoc --no-ri passenger -v 5.0.6
+
 ADD /pf.conf /etc/apache2/sites-available/pf.conf
 
 RUN git clone https://github.com/pentestgeek/phishing-frenzy.git /var/www/phishing-frenzy
 RUN touch /etc/apache2/httpd.conf
 RUN chown www-data:www-data /etc/apache2/httpd.conf
-
-RUN gem install --no-rdoc --no-ri rails
-RUN gem install --no-rdoc --no-ri passenger -v 5.0.6
 
 RUN yes | passenger-install-apache2-module
 
