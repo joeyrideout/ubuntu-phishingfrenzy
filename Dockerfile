@@ -28,7 +28,7 @@ RUN git clone https://github.com/pentestgeek/phishing-frenzy.git /var/www/phishi
 # Install Redis - Just apt-get or use linked container?
 RUN curl http://download.redis.io/releases/redis-stable.tar.gz \
  | tar -xz && cd redis-stable && \
- make && make install && cd utils/ && ./install_server.sh && \
+ make && make install && cd utils/ && ./install_server.sh
 
 # Set up Apache configuration
 COPY /pf.conf /etc/apache2/sites-available/pf.conf
@@ -40,7 +40,7 @@ RUN touch /etc/apache2/httpd.conf && \
     a2dissite 000-default && \
     echo "www-data ALL=(ALL) NOPASSWD: /etc/init.d/apache2 reload" >> /etc/sudoers && \
     chown -R www-data:www-data /etc/apache2/sites-available/ && \
-    chown -R www-data:www-data /etc/apache2/sites-enabled/ && \
+    chown -R www-data:www-data /etc/apache2/sites-enabled/
 
 # Initialize the Database
 RUN /etc/init.d/mysql start && \
