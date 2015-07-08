@@ -20,15 +20,15 @@ RUN gem install --no-rdoc --no-ri rails
 RUN gem install --no-rdoc --no-ri passenger -v 5.0.6
 RUN yes | passenger-install-apache2-module
 
-# Clone Phishing Frenzy
-RUN git clone https://github.com/pentestgeek/phishing-frenzy.git /var/www/phishing-frenzy && \
-    cd /var/www/phishing-frenzy/ && \
-    bundle install
-
 # Install Redis - Just apt-get or use linked container?
 RUN curl http://download.redis.io/releases/redis-stable.tar.gz \
  | tar -xz && cd redis-stable && \
  make && make install && cd utils/ && ./install_server.sh
+
+# Clone Phishing Frenzy
+RUN git clone https://github.com/pentestgeek/phishing-frenzy.git /var/www/phishing-frenzy && \
+    cd /var/www/phishing-frenzy/ && \
+    bundle install
 
 # Set up Apache configuration
 COPY /pf.conf /etc/apache2/sites-available/pf.conf
@@ -57,7 +57,6 @@ RUN /etc/init.d/mysql start && \
 # Set up final permissions on PF folders
 RUN mkdir -p /var/www/phishing-frenzy/tmp/pids && \
     chown -R www-data:www-data /var/www/phishing-frenzy/ && \
-    chown -R www-data:www-data /var/www/phishing-frenzy/public/uploads/ && \
     chmod -R 755 /var/www/phishing-frenzy/public/uploads/
 
 COPY /startup.sh /startup.sh
