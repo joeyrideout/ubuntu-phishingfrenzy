@@ -23,27 +23,26 @@ RUN yes | passenger-install-apache2-module
 # Clone Phishing Frenzy
 RUN git clone https://github.com/pentestgeek/phishing-frenzy.git /var/www/phishing-frenzy && \
     cd /var/www/phishing-frenzy/ && \
-    bundle install && \
-    mkdir -p /var/www/phishing-frenzy/tmp/cache/
-    sudo chown -R www-data:www-data /var/www/phishing-frenzy/
+    bundle install
 
-# Install Redis
-RUN cd /var/www/phishing-frenzy/ && \
- curl http://download.redis.io/releases/redis-stable.tar.gz  \
+# Install Redis - Just apt-get or use linked container?
+RUN curl http://download.redis.io/releases/redis-stable.tar.gz \
  | tar -xz && cd redis-stable && \
  make && make install && cd utils/ && ./install_server.sh && \
- mkdir -p /var/www/phishing-frenzy/tmp/pids
 
+# Set up Apache configuration
 COPY /pf.conf /etc/apache2/sites-available/pf.conf
 COPY /apache2.conf /etc/apache2/apache2.conf
+
 RUN touch /etc/apache2/httpd.conf && \
     chown www-data:www-data /etc/apache2/httpd.conf && \
     a2ensite pf && \
     a2dissite 000-default && \
-    echo "www-data ALL=(ALL) NOPASSWD: /etc/init.d/apache2 reload" >> /etc/sudoers
+    echo "www-data ALL=(ALL) NOPASSWD: /etc/init.d/apache2 reload" >> /etc/sudoers && \
+    chown -R www-data:www-data /etc/apache2/sites-available/ && \
+    chown -R www-data:www-data /etc/apache2/sites-enabled/ && \
 
 # Initialize the Database
-
 RUN /etc/init.d/mysql start && \
  mysqladmin -u root password "Funt1me!" && \
  mysql -uroot -pFunt1me! -e "create database pf_dev;" && \
@@ -55,13 +54,13 @@ RUN /etc/init.d/mysql start && \
     bundle exec rake db:seed && \
     bundle exec rake templates:load
 
-RUN chown -R www-data:www-data /etc/apache2/sites-available/ && \
-    chown -R www-data:www-data /etc/apache2/sites-enabled/ && \
+# Set up final permissions on PF folders
+RUN mkdir -p /var/www/phishing-frenzy/tmp/pids && \
+    chown -R www-data:www-data /var/www/phishing-frenzy/ && \
     chown -R www-data:www-data /var/www/phishing-frenzy/public/uploads/ && \
     chmod -R 755 /var/www/phishing-frenzy/public/uploads/
 
 COPY /startup.sh /startup.sh
-
 RUN chmod +x /startup.sh
 
 CMD /startup.sh
