@@ -24,6 +24,7 @@ RUN yes | passenger-install-apache2-module
 RUN git clone https://github.com/pentestgeek/phishing-frenzy.git /var/www/phishing-frenzy && \
     cd /var/www/phishing-frenzy/ && \
     bundle install && \
+    mkdir -p /var/www/phishing-frenzy/tmp/cache/
     sudo chown -R www-data:www-data /var/www/phishing-frenzy/
 
 # Install Redis
@@ -40,6 +41,8 @@ RUN touch /etc/apache2/httpd.conf && \
     a2ensite pf && \
     a2dissite 000-default && \
     echo "www-data ALL=(ALL) NOPASSWD: /etc/init.d/apache2 reload" >> /etc/sudoers
+
+# Initialize the Database
 
 RUN /etc/init.d/mysql start && \
  mysqladmin -u root password "Funt1me!" && \
