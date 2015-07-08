@@ -42,11 +42,14 @@ RUN touch /etc/apache2/httpd.conf && \
     chown -R www-data:www-data /etc/apache2/sites-available/ && \
     chown -R www-data:www-data /etc/apache2/sites-enabled/
 
+ENV MYSQL_ROOT_PASSWORD Funt1me!
+ENV MYSQL_USER_PASSWORD password
+
 # Initialize the Database
 RUN /etc/init.d/mysql start && \
- mysqladmin -u root password "Funt1me!" && \
- mysql -uroot -pFunt1me! -e "create database pf_dev;" && \
- mysql -uroot -pFunt1me! -e "grant all privileges on pf_dev.* to 'pf_dev'@'localhost' identified by 'password';"
+ mysqladmin -u root password $MYSQL_PASSWORD && \
+ mysql -uroot -p$MYSQL_PASSWORD -e "create database pf_dev;" && \
+ mysql -uroot -p$MYSQL_PASSWORD -e "grant all privileges on pf_dev.* to 'pf_dev'@'localhost' identified by '$MYSQL_USER_PASSWORD';"
 
 RUN /etc/init.d/mysql start && \
     cd /var/www/phishing-frenzy/ && \
@@ -56,7 +59,7 @@ RUN /etc/init.d/mysql start && \
 
 # Set up final permissions on PF folders
 RUN mkdir -p /var/www/phishing-frenzy/tmp/pids && \
-    mkdir -p /var/www/phishing-frenzy/tmp/cache/assets/developments && \
+    mkdir -p /var/www/phishing-frenzy/log && \
     mkdir -p /var/www/phishing-frenzy/tmp/cache/assets/development && \
     mkdir -p /var/www/phishing-frenzy/tmp/cache/assets/sprockets && \
     chown -R www-data:www-data /var/www/phishing-frenzy/ && \
