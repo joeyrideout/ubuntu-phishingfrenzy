@@ -12,6 +12,7 @@ if (! pgrep mysql); then
 fi
 
 if (! pgrep sidekiq); then
+        cd /var/www/phishing-frenzy/ && \
         bundle exec sidekiq -C config/sidekiq.yml &
 fi
 apachectl stop
