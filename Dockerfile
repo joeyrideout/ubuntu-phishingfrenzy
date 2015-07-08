@@ -54,9 +54,6 @@ RUN /etc/init.d/mysql start && \
     bundle exec rake db:seed && \
     bundle exec rake templates:load
 
-RUN mkdir -p /var/www/phishing-frenzy/tmp/pids && \
-    cd /var/www/phishing-frenzy/ && bundle exec sidekiq -C config/sidekiq.yml
-
 # Set up final permissions on PF folders
 RUN mkdir -p /var/www/phishing-frenzy/tmp/pids && \
     mkdir -p /var/www/phishing-frenzy/tmp/cache/assets/developments && \
