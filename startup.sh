@@ -12,9 +12,7 @@ if (! pgrep mysql); then
 fi
 
 if (! pgrep sidekiq); then
-        cd /var/www/phishing-frenzy/
         bundle exec sidekiq -d -C config/sidekiq.yml
-        chown -R www-data:www-data /var/www/phishing-frenzy/
 fi
 apachectl stop
 apachectl -DFOREGROUND
