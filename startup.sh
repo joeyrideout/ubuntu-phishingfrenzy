@@ -12,7 +12,7 @@ if (! pgrep mysql); then
 fi
 
 if (! pgrep sidekiq); then
-        bundle exec sidekiq -d -C config/sidekiq.yml
+        bundle exec sidekiq -C config/sidekiq.yml &
 fi
 apachectl stop
 apachectl -DFOREGROUND
