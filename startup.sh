@@ -17,3 +17,5 @@ if (! pgrep sidekiq); then
 fi
 apachectl stop
 apachectl -DFOREGROUND
+a2dissite 000-default.conf
+service apache2 reload
